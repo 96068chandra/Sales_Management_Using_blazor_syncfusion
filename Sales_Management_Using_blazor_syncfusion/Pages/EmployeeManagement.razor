@@ -1,0 +1,53 @@
+﻿@page "/EmployeeManagement"
+@using Sales_Management_Using_blazor_syncfusion.Entities;
+@using Sales_Management_Using_blazor_syncfusion.Models;
+@using Syncfusion.Blazor.Grids
+@using Sales_Management_Using_blazor_syncfusion.Services.Contracts
+@using Syncfusion.Blazor.DropDowns
+@inject IEmployeeManagementService EmployeeManagementService
+<h3>EmployeeManagement</h3>
+<div style="max-width:900px">
+    <SfGrid DataSource="employeeData">
+        
+        <GridColumns>
+            <GridColumn IsPrimaryKey="true" Field="@nameof(EmployeeModel.id)" Width="50px"></GridColumn>
+            <GridColumn HeaderText="First Name" Field="@nameof(EmployeeModel.FirstName)"></GridColumn>
+            <GridColumn HeaderText="Last Name" Field="@nameof(EmployeeModel.LastName)"></GridColumn>
+            @*<GridColumn HeaderText="Job Title" Field="@nameof(EmployeeModel.EmployeeJobTitleId)"></GridColumn>*@
+            <GridForeignColumn HeaderText="Designation" TValue="EmployeeJobTitle" Field="@nameof(EmployeeModel.EmployeeJobTitleId)" ForeignDataSource="employeeJobTitlesData" ForeignKeyValue="Name" Width="100px">
+                <EditTemplate>
+                    <SfDropDownList @bind-Value="@((context as EmployeeModel).EmployeeJobTitleId)"
+                    ID="EmployeeJobTitleId"
+                    DataSource="employeeJobTitlesData" TItem="EmployeeJobTitle"
+                    TValue="int">
+                        <DropDownListFieldSettings Text="Name" Value="EmployeeJobTitleId">
+
+                        </DropDownListFieldSettings>
+
+                    </SfDropDownList>
+                </EditTemplate>
+
+            </GridForeignColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Gender)" Width="100px"></GridColumn>
+            <GridColumn HeaderText="Date of Birth" Field="@nameof(EmployeeModel.DateOfBirth)" Format="d"></GridColumn>
+            <GridColumn HeaderText="Reports" Field="@nameof(EmployeeModel.ReportToEmpId)" Width="100px"></GridColumn>
+
+        </GridColumns>
+
+    </SfGrid>
+</div>
+
+@code {
+    private List<EmployeeModel>? employeeData = null;
+    private List<EmployeeJobTitle>? employeeJobTitlesData;
+    //private List<Object> toolbar = new List<object> { "Add", "Edit", "Delete","Update", "Cancel", "Search" };
+    protected override async Task OnInitializedAsync()
+    {
+        employeeData = await EmployeeManagementService.GetEmployees();
+        
+        employeeJobTitlesData = await EmployeeManagementService.GetJobTitles();
+    }
+
+
+
+}
